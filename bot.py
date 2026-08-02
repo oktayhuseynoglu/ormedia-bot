@@ -4,20 +4,23 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 import yt_dlp
 
-# Proxy OFF (çox vacib)
+# 🔥 Proxy TAM SÖNDÜR (çox vacib)
 os.environ["http_proxy"] = ""
 os.environ["https_proxy"] = ""
+os.environ["HTTP_PROXY"] = ""
+os.environ["HTTPS_PROXY"] = ""
 
-TOKEN = "123456789:AAAbcD_example_token"
+TOKEN = os.getenv("8978077989:AAHO7t5gKVpGdmxAqkc0ek4KFBb7k0jDIac")  # Railway üçün
 
 logging.basicConfig(level=logging.INFO)
 
-# Video download funksiyası
+# 🎥 Video download funksiyası
 def download_video(url):
     ydl_opts = {
         'format': 'best',
         'noplaylist': True,
         'quiet': True,
+        'proxy': None,  # 🔥 proxy OFF
         'outtmpl': 'video.%(ext)s'
     }
 
@@ -25,7 +28,7 @@ def download_video(url):
         info = ydl.extract_info(url, download=True)
         return ydl.prepare_filename(info)
 
-# Mesaj handler
+# 📩 Mesaj handler
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     url = update.message.text
 
@@ -39,10 +42,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         os.remove(file)
 
     except Exception as e:
-        print(e)
+        print("Xəta:", e)
         await update.message.reply_text("Media tapılmadı ❌")
 
-# Bot start
+# 🚀 Bot start
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
