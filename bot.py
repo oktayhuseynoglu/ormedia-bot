@@ -8,7 +8,7 @@ import yt_dlp
 os.environ["http_proxy"] = ""
 os.environ["https_proxy"] = ""
 
-TOKEN = os.getenv("8978077989:AAHO7t5gKVpGdmxAqkc0ek4KFBb7k0jDIac")
+TOKEN = "123456789:AAAbcD_example_token"
 
 logging.basicConfig(level=logging.INFO)
 
