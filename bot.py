@@ -1,11 +1,12 @@
-import requests
+import aiohttp
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 
-TELEGRAM_TOKEN = "8978077989:AAHO7t5gKVpGdmxAqkc0ek4KFBb7k0jDIac"
+TELEGRAM_TOKEN = "8616220389:AAHYyvBBc-uUbnaPUN4x6q3Z7Wn4JCO7olw"
 OPENROUTER_API_KEY = "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"
 
-def ask_ai(messages):
+# 🧠 AI function (ASYNC - FIXED)
+async def ask_ai(messages):
     url = "https://openrouter.ai/api/v1/chat/completions"
 
     headers = {
@@ -14,40 +15,48 @@ def ask_ai(messages):
     }
 
     data = {
-        "model": "openai/gpt-4o-mini",  # 🔥 PREMIUM MODEL
-        "messages": messages,
-        "temperature": 0.7
+        "model": "openchat/openchat-3.5",
+        "messages": messages
     }
 
-    res = requests.post(url, headers=headers, json=data)
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, headers=headers, json=data) as res:
+                text = await res.text()
 
-    if res.status_code == 200:
-        return res.json()["choices"][0]["message"]["content"]
-    else:
-        return "AI error 😢"
+                if res.status != 200:
+                    return f"API ERROR {res.status}\n{text}"
 
-# 🔁 memory (chat history)
+                json_data = await res.json()
+                return json_data["choices"][0]["message"]["content"]
+
+    except Exception as e:
+        return f"Xəta: {str(e)}"
+
+# 🧠 memory
 user_memory = {}
 
+# 💬 handler
 async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
     text = update.message.text
 
     if user_id not in user_memory:
         user_memory[user_id] = [
-            {"role": "system", "content": "You are a premium ChatGPT-like AI assistant."}
+            {"role": "system", "content": "Azərbaycan dilində danışan ChatGPT kimisən."}
         ]
 
     user_memory[user_id].append({"role": "user", "content": text})
 
-    reply = ask_ai(user_memory[user_id])
+    reply = await ask_ai(user_memory[user_id])
 
     user_memory[user_id].append({"role": "assistant", "content": reply})
 
     await update.message.reply_text(reply)
 
+# 🚀 run
 app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
-app.add_handler(MessageHandler(filters.TEXT, handle))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
 
-print("🔥 Premium bot running...")
+print("🔥 Bot işləyir...")
 app.run_polling()
