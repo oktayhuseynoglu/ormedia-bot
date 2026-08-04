@@ -21,10 +21,10 @@ LETTERS = list("ABÇDEƏFGHİJKLMNOPRSŞTUÜVXYZ")
 
 CATEGORIES = [
     "👤 Ad",
-    "👤 Soyad",
-    "🏙 Şəhər",
+    "👥 Soyad",
+    "🌍 Şəhər",
     "🍎 Meyvə",
-    "🔧 Əşya",
+    "📦 Əşya",
     "🐾 Heyvan"
 ]
 
@@ -36,49 +36,70 @@ GAME_GIF = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"
 
 
 
-# =========================
+# ======================
 # START
-# =========================
+# ======================
 
 @dp.message(Command("start"))
 async def start(message: Message):
 
     text = """
-🎮 <b>TapBaTap Oyunu</b>
-
-Söz tapma yarışına xoş gəlmisən!
+🎮 <b>TapBaTap Oyunu</b> 🔥
 
 
-📌 Qaydalar:
-
-🔤 Bot hər raundda bir hərf verir.
-
-Sən bu sırayla cavab yazırsan:
-
-1️⃣ Ad
-2️⃣ Soyad
-3️⃣ Şəhər
-4️⃣ Meyvə
-5️⃣ Əşya
-6️⃣ Heyvan
+👋 Xoş gəlmisən!
 
 
-⭐ Düz cavab = 10 xal
-
-
-❌ Söz tapa bilməsən:
-<code>-</code> yaz
-
-
-⏭ Eyni hərf təkrar gəlsə:
-<code>/kec</code> yaz
-
-
-🏆 100 xal toplayan qalib olur!
+🧩 Söz tapma yarışına başla!
 
 
 ━━━━━━━━━━━━━━
-<code>OR0310❤️</code>
+
+
+📌 <b>Oyun qaydaları:</b>
+
+
+🔤 Bot bir hərf verir.
+
+
+📝 Bu sırayla cavab yaz:
+
+
+1️⃣ 👤 Ad
+
+2️⃣ 👥 Soyad
+
+3️⃣ 🌍 Şəhər
+
+4️⃣ 🍎 Meyvə
+
+5️⃣ 📦 Əşya
+
+6️⃣ 🐾 Heyvan
+
+
+━━━━━━━━━━━━━━
+
+
+⭐ Düz cavab:
+➕ 10 xal
+
+
+❌ Söz tapa bilmirsənsə:
+➡️ - yaz
+
+
+⏭️ Təkrar hərf olsa:
+➡️ /kec yaz
+
+
+🏆 100 xal:
+👑 QALİB
+
+
+━━━━━━━━━━━━━━
+
+⚙️ Bot coperating OR0310 ❤️
 """
 
     await message.answer_animation(
@@ -89,14 +110,14 @@ Sən bu sırayla cavab yazırsan:
 
 
     await message.answer(
-        "🚀 Oyuna başlamaq üçün:\n\n/basla"
+        "🚀 Oyuna başlamaq üçün:\n\n🎮 /basla"
     )
 
 
 
-# =========================
+# ======================
 # BASLA
-# =========================
+# ======================
 
 @dp.message(Command("basla"))
 async def basla(message: Message):
@@ -115,69 +136,60 @@ async def basla(message: Message):
 
 
     await message.answer(
-        f"""
-🎮 <b>TAPBATAP BAŞLADI!</b> 🔥
-
-━━━━━━━━━━━━━━
-
-🔤 <b>Sənin hərfin:</b>
-
-🌟 <code>{letter}</code>
-
-━━━━━━━━━━━━━━
-
-
-📝 <b>Cavabları bu sırayla yaz:</b>
-
-
-1️⃣ 👤 Ad
-
-2️⃣ 👤 Soyad
-
-3️⃣ 🏙 Şəhər
-
-4️⃣ 🍎 Meyvə
-
-5️⃣ 🔧 Əşya
-
-6️⃣ 🐾 Heyvan
+f"""
+🎮 <b>Yeni oyun başladı!</b> 🔥
 
 
 ━━━━━━━━━━━━━━
 
 
-💡 Söz tapa bilməsən:
+🔤 <b>Hərf:</b>
 
-➡️ <code>-</code> yaz
-
-
-⏭ Təkrar hərf gəlsə:
-
-➡️ /kec yaz
-
-
-🏆 Düz cavab:
-
-⭐ 10 xal
-
-
-🎯 Qalib:
-
-💯 100 xal
+⭐ {letter}
 
 
 ━━━━━━━━━━━━━━
 
-🚀 Uğurlar!
+
+📝 Cavabları bu formada yaz:
+
+
+👤 Ad
+
+👥 Soyad
+
+🌍 Şəhər
+
+🍎 Meyvə
+
+📦 Əşya
+
+🐾 Heyvan
+
+
+━━━━━━━━━━━━━━
+
+
+💡 Bilmədiyin söz:
+
+➖ - yaz
+
+
+⏭️ Təkrar hərf:
+
+➡️ /kec
+
+
+🍀 Uğurlar!
 """,
-        parse_mode="HTML"
-    )
+parse_mode="HTML"
+)
 
 
 
-# =========================
+# ======================
 # STOP
-# =========================
+# ======================
 
 @dp.message(Command("stop"))
 async def stop(message: Message):
@@ -187,7 +199,15 @@ async def stop(message: Message):
         del games[message.chat.id]
 
         await message.answer(
-            "🛑 Oyun dayandırıldı!"
+"""
+🛑 <b>Oyun dayandırıldı!</b>
+
+
+🎮 Yenidən başlamaq üçün:
+
+➡️ /basla
+""",
+parse_mode="HTML"
         )
 
     else:
@@ -198,9 +218,9 @@ async def stop(message: Message):
 
 
 
-# =========================
+# ======================
 # KEC
-# =========================
+# ======================
 
 @dp.message(Command("kec"))
 async def kec(message: Message):
@@ -217,15 +237,6 @@ async def kec(message: Message):
         return
 
 
-    if game["letter"] != game["last_letter"]:
-
-        await message.answer(
-            "❌ Bu hərf yenidir.\n/kec yalnız təkrar hərfdə işləyir."
-        )
-
-        return
-
-
 
     new_letter = random.choice(LETTERS)
 
@@ -237,21 +248,28 @@ async def kec(message: Message):
 
 
     await message.answer(
-        f"""
-⏭ <b>Raund keçildi!</b>
+f"""
+⏭️ <b>Hərf keçildi!</b>
+
+
+🔄 Yeni raund:
+
 
 🔤 Yeni hərf:
 
-🌟 <code>{new_letter}</code>
+⭐ {new_letter}
+
+
+🔥 Davam et!
 """,
-        parse_mode="HTML"
-    )
+parse_mode="HTML"
+)
 
 
 
-# =========================
-# OYUN CAVABLARI
-# =========================
+# ======================
+# OYUN
+# ======================
 
 @dp.message()
 async def game_input(message: Message):
@@ -259,6 +277,7 @@ async def game_input(message: Message):
 
     if message.text.startswith("/"):
         return
+
 
 
     game = games.get(message.chat.id)
@@ -276,29 +295,29 @@ async def game_input(message: Message):
     if len(words) != 6:
 
         await message.answer(
-            """
-⚠️ <b>Oyunun qaydalarına uyğun mesaj yazın!</b>
+"""
+⚠️ <b>Oyunun qaydasına uyğun yaz!</b>
 
 
-📝 Format:
+📝 Cavab formatı:
 
 
-Ad
+👤 Ad
 
-Soyad
+👥 Soyad
 
-Şəhər
+🌍 Şəhər
 
-Meyvə
+🍎 Meyvə
 
-Əşya
+📦 Əşya
 
-Heyvan
+🐾 Heyvan
 
 
 Hər biri ayrı sətirdə olmalıdır.
 """,
-            parse_mode="HTML"
+parse_mode="HTML"
         )
 
         return
@@ -340,7 +359,6 @@ Hər biri ayrı sətirdə olmalıdır.
                 f"{CATEGORIES[i]} ✅ {word}"
             )
 
-
         else:
 
             results.append(
@@ -363,22 +381,31 @@ Hər biri ayrı sətirdə olmalıdır.
 
 
     await message.answer(
-        f"""
-📊 <b>Nəticə</b>
+f"""
+📊 <b>Raund nəticəsi</b> 🎯
+
+
+━━━━━━━━━━━━━━
 
 
 {chr(10).join(results)}
 
 
+━━━━━━━━━━━━━━
+
+
 ⭐ Bu raund:
-{score} xal
+➕ {score} xal
 
 
 🏆 Ümumi:
-{total} xal
+💰 {total} xal
+
+
+🔥 Davam edirik!
 """,
-        parse_mode="HTML"
-    )
+parse_mode="HTML"
+)
 
 
 
@@ -386,20 +413,28 @@ Hər biri ayrı sətirdə olmalıdır.
 
 
         await message.answer(
-            f"""
-🎉 <b>TƏBRİKLƏR!</b> 🏆
+f"""
+🎉🎉 <b>TƏBRİKLƏR!</b> 🎉🎉
 
 
-👑 {message.from_user.full_name}
+👑 Qalib:
+
+<b>{message.from_user.full_name}</b>
 
 
-100 xal toplayaraq qalib oldun!
+🏆 100 xal topladı!
 
 
-🎮 Növbəti oyunda bütün iştirakçılara uğurlar arzulayırıq! 🚀
-"""
-            ,
-            parse_mode="HTML"
+🍀 Növbəti oyunda hamıya uğurlar!
+
+
+━━━━━━━━━━━━━━
+
+⚙️ OR0310 ❤️
+
+━━━━━━━━━━━━━━
+""",
+parse_mode="HTML"
         )
 
 
@@ -417,23 +452,27 @@ Hər biri ayrı sətirdə olmalıdır.
     game["letter"] = new_letter
 
 
+
     await message.answer(
-        f"""
-🔁 Yeni raund!
+f"""
+🔄 <b>Yeni raund!</b>
 
 
 🔤 Hərf:
 
-🌟 <code>{new_letter}</code>
+⭐ {new_letter}
+
+
+🎮 Uğurlar!
 """,
-        parse_mode="HTML"
-    )
+parse_mode="HTML"
+)
 
 
 
-# =========================
+# ======================
 # RUN
-# =========================
+# ======================
 
 async def main():
 
