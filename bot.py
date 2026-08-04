@@ -96,9 +96,22 @@ async def game_input(message: Message):
     user_id = message.from_user.id
     words = message.text.strip().split("\n")
 
-    if len(words) != 6:
-        await message.answer("❌ 6 sətir yaz!")
-        return
+if len(words) != 6:
+    await message.answer("""
+⚠️ Oyunun qaydalarına uyğun mesaj yazın!
+
+📝 Cavab formatı:
+
+👤 Ad
+👤 Soyad
+🏙 Şəhər
+🍎 Meyvə
+🔧 Əşya
+🐾 Heyvan
+
+Hər biri ayrı sətirdə olmalıdır.
+""")
+    return
 
     letter = game["letter"].lower()
     score = 0
