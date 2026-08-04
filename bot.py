@@ -46,24 +46,15 @@ async def start(message: Message):
     text = """
 🎮 <b>TapBaTap Oyunu</b> 🔥
 
-
 👋 Xoş gəlmisən!
 
-
 🧩 Söz tapma yarışına başla!
-
-
 ━━━━━━━━━━━━━━
-
-
 📌 <b>Oyun qaydaları:</b>
-
 
 🔤 Bot bir hərf verir.
 
-
 📝 Bu sırayla cavab yaz:
-
 
 1️⃣ 👤 Ad
 
@@ -76,29 +67,16 @@ async def start(message: Message):
 5️⃣ 📦 Əşya
 
 6️⃣ 🐾 Heyvan
-
-
 ━━━━━━━━━━━━━━
-
-
 ⭐ Düz cavab:
 ➕ 10 xal
-
-
 ❌ Söz tapa bilmirsənsə:
 ➡️ - yaz
-
-
 ⏭️ Təkrar hərf olsa:
 ➡️ /kec yaz
-
-
 🏆 100 xal:
 👑 QALİB
-
-
 ━━━━━━━━━━━━━━
-
 ⚙️ Bot coperating OR0310 ❤️
 """
 
@@ -138,48 +116,23 @@ async def basla(message: Message):
     await message.answer(
 f"""
 🎮 <b>Yeni oyun başladı!</b> 🔥
-
-
 ━━━━━━━━━━━━━━
-
-
 🔤 <b>Hərf:</b>
 
 ⭐ {letter}
-
-
 ━━━━━━━━━━━━━━
-
-
 📝 Cavabları bu formada yaz:
-
-
 👤 Ad
-
 👥 Soyad
-
 🌍 Şəhər
-
 🍎 Meyvə
-
 📦 Əşya
-
 🐾 Heyvan
-
-
 ━━━━━━━━━━━━━━
-
-
 💡 Bilmədiyin söz:
-
 ➖ - yaz
-
-
 ⏭️ Təkrar hərf:
-
 ➡️ /kec
-
-
 🍀 Uğurlar!
 """,
 parse_mode="HTML"
@@ -201,7 +154,6 @@ async def stop(message: Message):
         await message.answer(
 """
 🛑 <b>Oyun dayandırıldı!</b>
-
 
 🎮 Yenidən başlamaq üçün:
 
@@ -250,15 +202,9 @@ async def kec(message: Message):
     await message.answer(
 f"""
 ⏭️ <b>Hərf keçildi!</b>
-
-
 🔄 Yeni raund:
-
-
 🔤 Yeni hərf:
-
 ⭐ {new_letter}
-
 
 🔥 Davam et!
 """,
@@ -297,24 +243,13 @@ async def game_input(message: Message):
         await message.answer(
 """
 ⚠️ <b>Oyunun qaydasına uyğun yaz!</b>
-
-
 📝 Cavab formatı:
-
-
 👤 Ad
-
 👥 Soyad
-
 🌍 Şəhər
-
 🍎 Meyvə
-
 📦 Əşya
-
 🐾 Heyvan
-
-
 Hər biri ayrı sətirdə olmalıdır.
 """,
 parse_mode="HTML"
@@ -397,10 +332,8 @@ f"""
 ⭐ Bu raund:
 ➕ {score} xal
 
-
 🏆 Ümumi:
 💰 {total} xal
-
 
 🔥 Davam edirik!
 """,
@@ -416,17 +349,13 @@ parse_mode="HTML"
 f"""
 🎉🎉 <b>TƏBRİKLƏR!</b> 🎉🎉
 
-
 👑 Qalib:
 
 <b>{message.from_user.full_name}</b>
 
-
 🏆 100 xal topladı!
 
-
 🍀 Növbəti oyunda hamıya uğurlar!
-
 
 ━━━━━━━━━━━━━━
 
@@ -457,11 +386,9 @@ parse_mode="HTML"
 f"""
 🔄 <b>Yeni raund!</b>
 
-
 🔤 Hərf:
 
 ⭐ {new_letter}
-
 
 🎮 Uğurlar!
 """,
