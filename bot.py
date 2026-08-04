@@ -13,16 +13,11 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
-# 🔤 hərflər
-letters = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-# 📊 kateqoriyalar
+letters = list("ABCDEFGHİJKLMNOPQRSTUVXYZ")
 CATEGORIES = ["Ad", "Soyad", "Şəhər", "Meyvə", "Əşya", "Heyvan"]
 
-# 📂 oyunlar
 games = {}
 
-# 🎬 GIF
 GAME_GIF = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"
 
 
@@ -31,38 +26,20 @@ GAME_GIF = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"
 async def start(message: Message):
     text = """🎮 TapBaTap Oyunu
 
-Bot sənə bir hərf verəcək (məs: B)
+Bot sənə bir hərf verəcək
 
-Aşağıdakı sırayla yaz:
+🟡 Qaydalar:
+👉 Söz tapa bilmirsənsə → - yaz
+👉 Eyni hərf təkrar gəlsə → /kec yaz
 
-👤 Ad
-👤 Soyad
-🏙 Şəhər
-🍎 Meyvə
-🔧 Əşya
-🐾 Heyvan
-
-Hamısı həmin hərflə başlamalıdır!
-
-🟡 Bilmirsənsə:
-👉 - yaz
-
-💰 Xal:
-✔ Düz söz → 10 xal
-
-🏆 100 xal qazanan qalib olur!
+💰 Düz söz = 10 xal
+🏆 100 xal qalib
 
 ━━━━━━━━━━━━━━
-<code>© OR0310❤️</code>
+<code>OR0310❤️</code>
 """
-
-    await message.answer_animation(
-        animation=GAME_GIF,
-        caption=text,
-        parse_mode="HTML"
-    )
-
-    await message.answer("▶ Oyuna başla: /basla")
+    await message.answer_animation(animation=GAME_GIF, caption=text, parse_mode="HTML")
+    await message.answer("▶ Başla: /basla")
 
 
 # ▶ BASLA
@@ -72,36 +49,32 @@ async def basla(message: Message):
 
     games[message.chat.id] = {
         "letter": letter,
+        "last_letter": None,
         "scores": {},
         "round": 1
     }
 
-    await message.answer(f"""
-🎯 Oyun başladı!
-
-🔤 Hərf: *{letter}*
-
-Bu sırayla yaz:
-
-👤 Ad
-👤 Soyad
-🏙 Şəhər
-🍎 Meyvə
-🔧 Əşya
-🐾 Heyvan
-
-✍ Hərəsi yeni sətirdə!
-""", parse_mode="Markdown")
+    await message.answer(f"🎯 Başladı!\n🔤 Hərf: *{letter}*", parse_mode="Markdown")
 
 
-# 🛑 STOP
-@dp.message(Command("stop"))
-async def stop(message: Message):
-    if message.chat.id in games:
-        del games[message.chat.id]
-        await message.answer("🛑 Oyun dayandırıldı!")
-    else:
+# ⏭️ KEC (yalnız eyni hərfdirsə işləsin)
+@dp.message(Command("kec"))
+async def skip(message: Message):
+    game = games.get(message.chat.id)
+
+    if not game:
         await message.answer("❌ Aktiv oyun yoxdur")
+        return
+
+    if game["letter"] != game["last_letter"]:
+        await message.answer("❌ Bu hərf yeni gəlib, keçə bilməzsən!")
+        return
+
+    new_letter = random.choice(letters)
+    game["last_letter"] = game["letter"]
+    game["letter"] = new_letter
+
+    await message.answer(f"⏭️ Keçildi!\n🔤 Yeni hərf: *{new_letter}*", parse_mode="Markdown")
 
 
 # 🎮 OYUN
@@ -113,11 +86,10 @@ async def game_input(message: Message):
         return
 
     user_id = message.from_user.id
-    text = message.text.strip()
-    words = text.split("\n")
+    words = message.text.strip().split("\n")
 
     if len(words) != 6:
-        await message.answer("❌ 6 sətir yazmalısan!")
+        await message.answer("❌ 6 sətir yaz!")
         return
 
     letter = game["letter"].lower()
@@ -137,10 +109,7 @@ async def game_input(message: Message):
         else:
             results.append(f"{CATEGORIES[i]}: ❌ {w}")
 
-    if user_id not in game["scores"]:
-        game["scores"][user_id] = 0
-
-    game["scores"][user_id] += score
+    game["scores"][user_id] = game["scores"].get(user_id, 0) + score
     total = game["scores"][user_id]
 
     await message.answer(f"""
@@ -148,40 +117,26 @@ async def game_input(message: Message):
 
 {chr(10).join(results)}
 
-💰 Bu raund: {score} xal
-🏆 Ümumi: {total} xal
+💰 Raund: {score}
+🏆 Ümumi: {total}
 """)
 
-    # 🏆 QALİB
+    # 🏆 qalib
     if total >= 100:
-        winner_name = message.from_user.full_name
-
         await message.answer(f"""
-🎉 TƏBRİKLƏR {winner_name}! 🏆
+🎉 {message.from_user.full_name} QALİB OLDU!
 
-Sən 100 xal toplayaraq oyunun qalibi oldun! 👏🔥
-
-🎮 Növbəti oyunda bütün iştirakçılara uğurlar arzulayırıq!
-
-▶ Yenidən başlamaq üçün: /basla
-
-━━━━━━━━━━━━━━
-<code>© OR0310❤️</code>
+Növbəti oyunda hamıya uğurlar! 🚀
 """)
-
         del games[message.chat.id]
         return
 
-    # 🔁 yeni raund
+    # 🔁 yeni raund (eyni hərf də gələ bilər)
     new_letter = random.choice(letters)
+    game["last_letter"] = game["letter"]
     game["letter"] = new_letter
-    game["round"] += 1
 
-    await message.answer(f"""
-🔁 Yeni raund!
-
-🔤 Hərf: *{new_letter}*
-""", parse_mode="Markdown")
+    await message.answer(f"🔁 Yeni hərf: *{new_letter}*", parse_mode="Markdown")
 
 
 # ▶ RUN
