@@ -118,7 +118,6 @@ f"""
 🎮 <b>Yeni oyun başladı!</b> 🔥
 ━━━━━━━━━━━━━━
 🔤 <b>Hərf:</b>
-
 ⭐ {letter}
 ━━━━━━━━━━━━━━
 📝 Cavabları bu formada yaz:
@@ -129,10 +128,8 @@ f"""
 📦 Əşya
 🐾 Heyvan
 ━━━━━━━━━━━━━━
-💡 Bilmədiyin söz:
-➖ - yaz
-⏭️ Təkrar hərf:
-➡️ /kec
+💡 Bilmədiyin söz olduqda yerinə - yaz
+⏭️ Təkrar hərf: /kec
 🍀 Uğurlar!
 """,
 parse_mode="HTML"
@@ -288,7 +285,7 @@ parse_mode="HTML"
 
         if word.startswith(letter):
 
-            score += 10
+            score += 5
 
             results.append(
                 f"{CATEGORIES[i]} ✅ {word}"
@@ -342,7 +339,7 @@ parse_mode="HTML"
 
 
 
-    if total >= 100:
+    if total >= 200:
 
 
         await message.answer(
@@ -353,7 +350,7 @@ f"""
 
 <b>{message.from_user.full_name}</b>
 
-🏆 100 xal topladı!
+🏆 200 xal topladı!
 
 🍀 Növbəti oyunda hamıya uğurlar!
 
