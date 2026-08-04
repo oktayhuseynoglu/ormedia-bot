@@ -16,8 +16,8 @@ bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
 
-# Azərbaycan hərfləri daxil
-LETTERS = list("ABCBÇDEƏFGHİJKLMNOPRSŞTUÜVXYZ")
+LETTERS = list("ABÇDEƏFGHİJKLMNOPRSŞTUÜVXYZ")
+
 
 CATEGORIES = [
     "👤 Ad",
@@ -44,30 +44,34 @@ GAME_GIF = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"
 async def start(message: Message):
 
     text = """
-🎮 TapBaTap Oyunu
+🎮 <b>TapBaTap Oyunu</b>
+
+Söz tapma yarışına xoş gəlmisən!
 
 
-Bot sənə bir hərf verir.
+📌 Qaydalar:
 
-Bu sırayla cavab yaz:
+🔤 Bot hər raundda bir hərf verir.
 
-👤 Ad
-👤 Soyad
-🏙 Şəhər
-🍎 Meyvə
-🔧 Əşya
-🐾 Heyvan
+Sən bu sırayla cavab yazırsan:
+
+1️⃣ Ad
+2️⃣ Soyad
+3️⃣ Şəhər
+4️⃣ Meyvə
+5️⃣ Əşya
+6️⃣ Heyvan
 
 
-🟡 Qaydalar:
+⭐ Düz cavab = 10 xal
 
-✅ Düz söz = 10 xal
 
-❌ Söz tapa bilmirsənsə:
-- yaz
+❌ Söz tapa bilməsən:
+<code>-</code> yaz
+
 
 ⏭ Eyni hərf təkrar gəlsə:
- /kec yaz
+<code>/kec</code> yaz
 
 
 🏆 100 xal toplayan qalib olur!
@@ -77,7 +81,6 @@ Bu sırayla cavab yaz:
 <code>OR0310❤️</code>
 """
 
-
     await message.answer_animation(
         animation=GAME_GIF,
         caption=text,
@@ -86,7 +89,7 @@ Bu sırayla cavab yaz:
 
 
     await message.answer(
-        "▶ Oyuna başlamaq üçün:\n\n/basla"
+        "🚀 Oyuna başlamaq üçün:\n\n/basla"
     )
 
 
@@ -100,6 +103,7 @@ async def basla(message: Message):
 
     letter = random.choice(LETTERS)
 
+
     games[message.chat.id] = {
 
         "letter": letter,
@@ -112,20 +116,59 @@ async def basla(message: Message):
 
     await message.answer(
         f"""
-🎯 Oyun başladı!
+🎮 <b>TAPBATAP BAŞLADI!</b> 🔥
 
-🔤 Hərf:
-<b>{letter}</b>
+━━━━━━━━━━━━━━
+
+🔤 <b>Sənin hərfin:</b>
+
+🌟 <code>{letter}</code>
+
+━━━━━━━━━━━━━━
 
 
-Cavabları bu formada yaz:
+📝 <b>Cavabları bu sırayla yaz:</b>
 
-Ad
-Soyad
-Şəhər
-Meyvə
-Əşya
-Heyvan
+
+1️⃣ 👤 Ad
+
+2️⃣ 👤 Soyad
+
+3️⃣ 🏙 Şəhər
+
+4️⃣ 🍎 Meyvə
+
+5️⃣ 🔧 Əşya
+
+6️⃣ 🐾 Heyvan
+
+
+━━━━━━━━━━━━━━
+
+
+💡 Söz tapa bilməsən:
+
+➡️ <code>-</code> yaz
+
+
+⏭ Təkrar hərf gəlsə:
+
+➡️ /kec yaz
+
+
+🏆 Düz cavab:
+
+⭐ 10 xal
+
+
+🎯 Qalib:
+
+💯 100 xal
+
+
+━━━━━━━━━━━━━━
+
+🚀 Uğurlar!
 """,
         parse_mode="HTML"
     )
@@ -170,13 +213,14 @@ async def kec(message: Message):
         await message.answer(
             "❌ Aktiv oyun yoxdur"
         )
+
         return
 
 
     if game["letter"] != game["last_letter"]:
 
         await message.answer(
-            "❌ Bu hərf yeni gəlib.\n/kec yalnız təkrar hərfdə işləyir."
+            "❌ Bu hərf yenidir.\n/kec yalnız təkrar hərfdə işləyir."
         )
 
         return
@@ -184,6 +228,7 @@ async def kec(message: Message):
 
 
     new_letter = random.choice(LETTERS)
+
 
     game["last_letter"] = game["letter"]
 
@@ -193,10 +238,11 @@ async def kec(message: Message):
 
     await message.answer(
         f"""
-⏭ Hərf keçildi!
+⏭ <b>Raund keçildi!</b>
 
 🔤 Yeni hərf:
-<b>{new_letter}</b>
+
+🌟 <code>{new_letter}</code>
 """,
         parse_mode="HTML"
     )
@@ -211,7 +257,6 @@ async def kec(message: Message):
 async def game_input(message: Message):
 
 
-    # komandaları yoxlama
     if message.text.startswith("/"):
         return
 
@@ -220,7 +265,6 @@ async def game_input(message: Message):
 
 
     if not game:
-
         return
 
 
@@ -228,26 +272,33 @@ async def game_input(message: Message):
     words = message.text.strip().split("\n")
 
 
-    # 6 sətir yoxlaması
 
     if len(words) != 6:
 
         await message.answer(
             """
-⚠️ Oyunun qaydalarına uyğun mesaj yazın!
+⚠️ <b>Oyunun qaydalarına uyğun mesaj yazın!</b>
 
-📝 Cavab formatı:
+
+📝 Format:
+
 
 Ad
+
 Soyad
+
 Şəhər
+
 Meyvə
+
 Əşya
+
 Heyvan
 
 
 Hər biri ayrı sətirdə olmalıdır.
-"""
+""",
+            parse_mode="HTML"
         )
 
         return
@@ -255,6 +306,7 @@ Hər biri ayrı sətirdə olmalıdır.
 
 
     user_id = message.from_user.id
+
 
     letter = game["letter"].lower()
 
@@ -273,7 +325,7 @@ Hər biri ayrı sətirdə olmalıdır.
         if word == "-":
 
             results.append(
-                f"{CATEGORIES[i]}: ❌ -"
+                f"{CATEGORIES[i]} ❌ -"
             )
 
             continue
@@ -285,15 +337,15 @@ Hər biri ayrı sətirdə olmalıdır.
             score += 10
 
             results.append(
-                f"{CATEGORIES[i]}: ✅ {word}"
+                f"{CATEGORIES[i]} ✅ {word}"
             )
+
 
         else:
 
             results.append(
-                f"{CATEGORIES[i]}: ❌ {word}"
+                f"{CATEGORIES[i]} ❌ {word}"
             )
-
 
 
 
@@ -312,39 +364,42 @@ Hər biri ayrı sətirdə olmalıdır.
 
     await message.answer(
         f"""
-📊 Nəticə:
+📊 <b>Nəticə</b>
 
 
 {chr(10).join(results)}
 
 
-💰 Bu raund:
+⭐ Bu raund:
 {score} xal
 
 
 🏆 Ümumi:
 {total} xal
-"""
+""",
+        parse_mode="HTML"
     )
 
 
-
-    # QALİB
 
     if total >= 100:
 
 
         await message.answer(
             f"""
-🎉 TƏBRİKLƏR!
+🎉 <b>TƏBRİKLƏR!</b> 🏆
 
-🏆 {message.from_user.full_name}
+
+👑 {message.from_user.full_name}
+
 
 100 xal toplayaraq qalib oldun!
 
 
-🎮 Növbəti oyunda bütün iştirakçılara uğurlar arzulayırıq!
+🎮 Növbəti oyunda bütün iştirakçılara uğurlar arzulayırıq! 🚀
 """
+            ,
+            parse_mode="HTML"
         )
 
 
@@ -354,9 +409,6 @@ Hər biri ayrı sətirdə olmalıdır.
 
 
 
-
-    # yeni raund
-
     new_letter = random.choice(LETTERS)
 
 
@@ -365,16 +417,14 @@ Hər biri ayrı sətirdə olmalıdır.
     game["letter"] = new_letter
 
 
-    game["round"] += 1
-
-
-
     await message.answer(
         f"""
 🔁 Yeni raund!
 
+
 🔤 Hərf:
-<b>{new_letter}</b>
+
+🌟 <code>{new_letter}</code>
 """,
         parse_mode="HTML"
     )
