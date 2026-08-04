@@ -22,8 +22,16 @@ GAME_GIF = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"
 
 
 # 🚀 START
-@dp.message(Command("start"))
-async def start(message: Message):
+@dp.message()
+async def game_input(message: Message):
+
+    # Komandaları oyuna salma
+    if message.text.startswith("/"):
+        return
+
+    game = games.get(message.chat.id)
+    if not game:
+        return
     text = """🎮 TapBaTap Oyunu
 
 Bot sənə bir hərf verəcək
