@@ -1,121 +1,192 @@
+import asyncio
+import logging
 import random
-from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
-TOKEN = "616220389:AAHYyvBBc-uUbnaPUN4x6q3Z7Wn4JCO7olw"
+from aiogram import Bot, Dispatcher
+from aiogram.types import Message
+from aiogram.filters import Command
 
-waiting_player = None
+API_TOKEN = "8859564877:AAFzU5M2q6nsrvL-y2_89DAskjGgjDNz_5I"
+
+logging.basicConfig(level=logging.INFO)
+
+bot = Bot(token=API_TOKEN)
+dp = Dispatcher()
+
+# 🔤 hərflər
+letters = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+# 📊 kateqoriyalar
+CATEGORIES = ["Ad", "Soyad", "Şəhər", "Meyvə", "Əşya", "Heyvan"]
+
+# 📂 oyunlar
 games = {}
 
-keyboard = [["🎮 Multiplayer", "❌ Stop"]]
-markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+# 🎬 GIF
+GAME_GIF = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"
 
-# start
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "🎮 Multiplayer oyununa xoş gəldin!",
-        reply_markup=markup
+
+# 🚀 START
+@dp.message(Command("start"))
+async def start(message: Message):
+    text = """🎮 TapBaTap Oyunu
+
+Bot sənə bir hərf verəcək (məs: B)
+
+Aşağıdakı sırayla yaz:
+
+👤 Ad
+👤 Soyad
+🏙 Şəhər
+🍎 Meyvə
+🔧 Əşya
+🐾 Heyvan
+
+Hamısı həmin hərflə başlamalıdır!
+
+🟡 Bilmirsənsə:
+👉 - yaz
+
+💰 Xal:
+✔ Düz söz → 10 xal
+
+🏆 100 xal qazanan qalib olur!
+
+━━━━━━━━━━━━━━
+<code>© OR0310❤️</code>
+"""
+
+    await message.answer_animation(
+        animation=GAME_GIF,
+        caption=text,
+        parse_mode="HTML"
     )
 
-# multiplayer start
-async def multiplayer(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    global waiting_player
+    await message.answer("▶ Oyuna başla: /basla")
 
-    user = update.message.from_user
-    user_id = user.id
 
-    if waiting_player is None:
-        waiting_player = user_id
-        await update.message.reply_text("⏳ Rəqib gözlənilir...")
+# ▶ BASLA
+@dp.message(Command("basla"))
+async def basla(message: Message):
+    letter = random.choice(letters)
+
+    games[message.chat.id] = {
+        "letter": letter,
+        "scores": {},
+        "round": 1
+    }
+
+    await message.answer(f"""
+🎯 Oyun başladı!
+
+🔤 Hərf: *{letter}*
+
+Bu sırayla yaz:
+
+👤 Ad
+👤 Soyad
+🏙 Şəhər
+🍎 Meyvə
+🔧 Əşya
+🐾 Heyvan
+
+✍ Hərəsi yeni sətirdə!
+""", parse_mode="Markdown")
+
+
+# 🛑 STOP
+@dp.message(Command("stop"))
+async def stop(message: Message):
+    if message.chat.id in games:
+        del games[message.chat.id]
+        await message.answer("🛑 Oyun dayandırıldı!")
     else:
-        player1 = waiting_player
-        player2 = user_id
+        await message.answer("❌ Aktiv oyun yoxdur")
 
-        number = random.randint(1, 100)
 
-        games[player1] = {
-            "number": number,
-            "turn": player1,
-            "opponent": player2
-        }
+# 🎮 OYUN
+@dp.message()
+async def game_input(message: Message):
 
-        games[player2] = {
-            "number": number,
-            "turn": player1,
-            "opponent": player1
-        }
-
-        waiting_player = None
-
-        await update.message.reply_text("🎮 Oyun başladı!\n🔢 1-100 arası ədəd tutuldu.")
-        await context.bot.send_message(player1, "👉 Sənin növbəndir!")
-        await context.bot.send_message(player2, "⏳ Rəqibin oynayır...")
-
-# handle
-async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user = update.message.from_user
-    user_id = user.id
-    text = update.message.text
-
-    if text == "🎮 Multiplayer":
-        await multiplayer(update, context)
+    game = games.get(message.chat.id)
+    if not game:
         return
 
-    if user_id not in games:
+    user_id = message.from_user.id
+    text = message.text.strip()
+    words = text.split("\n")
+
+    if len(words) != 6:
+        await message.answer("❌ 6 sətir yazmalısan!")
         return
 
-    game = games[user_id]
+    letter = game["letter"].lower()
+    score = 0
+    results = []
 
-    if game["turn"] != user_id:
-        await update.message.reply_text("⏳ Növbə səndə deyil")
+    for i, w in enumerate(words):
+        w = w.strip().lower()
+
+        if w == "-":
+            results.append(f"{CATEGORIES[i]}: ❌ -")
+            continue
+
+        if w.startswith(letter):
+            score += 10
+            results.append(f"{CATEGORIES[i]}: ✅ {w}")
+        else:
+            results.append(f"{CATEGORIES[i]}: ❌ {w}")
+
+    if user_id not in game["scores"]:
+        game["scores"][user_id] = 0
+
+    game["scores"][user_id] += score
+    total = game["scores"][user_id]
+
+    await message.answer(f"""
+📊 Nəticə:
+
+{chr(10).join(results)}
+
+💰 Bu raund: {score} xal
+🏆 Ümumi: {total} xal
+""")
+
+    # 🏆 QALİB
+    if total >= 100:
+        winner_name = message.from_user.full_name
+
+        await message.answer(f"""
+🎉 TƏBRİKLƏR {winner_name}! 🏆
+
+Sən 100 xal toplayaraq oyunun qalibi oldun! 👏🔥
+
+🎮 Növbəti oyunda bütün iştirakçılara uğurlar arzulayırıq!
+
+▶ Yenidən başlamaq üçün: /basla
+
+━━━━━━━━━━━━━━
+<code>© OR0310❤️</code>
+""")
+
+        del games[message.chat.id]
         return
 
-    try:
-        guess = int(text)
-    except:
-        await update.message.reply_text("🔢 Rəqəm yaz!")
-        return
+    # 🔁 yeni raund
+    new_letter = random.choice(letters)
+    game["letter"] = new_letter
+    game["round"] += 1
 
-    number = game["number"]
-    opponent = game["opponent"]
+    await message.answer(f"""
+🔁 Yeni raund!
 
-    if guess < number:
-        await update.message.reply_text("📉 Daha böyük")
-        await context.bot.send_message(opponent, "👉 Sənin növbəndir")
-        games[user_id]["turn"] = opponent
-        games[opponent]["turn"] = opponent
+🔤 Hərf: *{new_letter}*
+""", parse_mode="Markdown")
 
-    elif guess > number:
-        await update.message.reply_text("📈 Daha kiçik")
-        await context.bot.send_message(opponent, "👉 Sənin növbəndir")
-        games[user_id]["turn"] = opponent
-        games[opponent]["turn"] = opponent
 
-    else:
-        await update.message.reply_text("🎉 QAZANDIN!")
-        await context.bot.send_message(opponent, "😢 Uduzdun!")
+# ▶ RUN
+async def main():
+    await dp.start_polling(bot)
 
-        del games[user_id]
-        del games[opponent]
-
-# stop
-async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.message.from_user.id
-
-    if user_id in games:
-        opponent = games[user_id]["opponent"]
-        await context.bot.send_message(opponent, "❌ Rəqib oyunu tərk etdi")
-        del games[opponent]
-        del games[user_id]
-
-    await update.message.reply_text("🛑 Oyun dayandırıldı")
-
-# setup
-app = ApplicationBuilder().token(TOKEN).build()
-
-app.add_handler(CommandHandler("start", start))
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
-app.add_handler(CommandHandler("stop", stop))
-
-print("🎮 Multiplayer bot işləyir...")
-app.run_polling()
+if __name__ == "__main__":
+    asyncio.run(main())
